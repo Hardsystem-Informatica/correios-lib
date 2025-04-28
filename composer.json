@@ -1,0 +1,31 @@
+{
+    "name": "hardsystem/correios-lib",
+    "description": "Biblioteca PHP para integração com os serviços dos Correios",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Hardsystem",
+            "email": "contato@hardsystem.com.br"
+        }
+    ],
+    "require": {
+        "php": "^8.1",
+        "guzzlehttp/guzzle": "^7.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.0",
+        "phpstan/phpstan": "^1.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Hardsystem\\Correios\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Hardsystem\\Correios\\Tests\\": "tests/"
+        }
+    },
+    "minimum-stability": "stable"
+} 
