@@ -91,10 +91,20 @@ class Correios
         $token = $this->getToken();
         $servicos = $dados['servicos'] ?? ['04014', '04510']; // SEDEX e PAC
         $resultados = [];
-        $pesoGramas = $dados['peso'] * 1000; // Convertendo peso para gramas
 
         foreach ($servicos as $servico) {
             try {
+                // Converter peso de kg para gramas (API dos Correios espera peso em gramas)
+                $pesoGramas = $dados['peso'] * 1000;
+                
+                // Aplicar limites das dimensões conforme especificações dos Correios
+                $dimensoes = $this->aplicarLimitesDimensoes([
+                    'altura' => $dados['altura'],
+                    'largura' => $dados['largura'],
+                    'comprimento' => $dados['comprimento'],
+                    'diametro' => $dados['diametro'] ?? 0
+                ]);
+                
                 $response = $this->client->get($this->baseUrl . '/preco/v1/nacional/' . $servico, [
                     'headers' => [
                         'Authorization' => 'Bearer ' . $token['token'],
@@ -104,10 +114,10 @@ class Correios
                         'cepDestino' => $dados['cepDestino'],
                         'cepOrigem' => $dados['cepOrigem'],
                         'psObjeto' => $pesoGramas,
-                        'comprimento' => $dados['comprimento'],
-                        'largura' => $dados['largura'],
-                        'altura' => $dados['altura'],
-                        'diametro' => $dados['diametro'] ?? 0
+                        'comprimento' => $dimensoes['comprimento'],
+                        'largura' => $dimensoes['largura'],
+                        'altura' => $dimensoes['altura'],
+                        'diametro' => $dimensoes['diametro']
                     ]
                 ]);
 
@@ -123,6 +133,59 @@ class Correios
         }
 
         return $resultados;
+    }
+
+    /**
+     * Aplica os limites de dimensões conforme especificações dos Correios
+     *
+     * @param array $dimensoes
+     * @return array
+     */
+    private function aplicarLimitesDimensoes(array $dimensoes): array
+    {
+        $altura = $dimensoes['altura'];
+        $largura = $dimensoes['largura'];
+        $comprimento = $dimensoes['comprimento'];
+        $diametro = $dimensoes['diametro'];
+
+        // Limites para PACOTE E CAIXA (formato padrão)
+        // Comprimento: 16 cm a 105 cm
+        $comprimento = max(16, min(105, $comprimento));
+        
+        // Largura: 11 cm a 105 cm
+        $largura = max(11, min(105, $largura));
+        
+        // Altura: 2 cm a 105 cm
+        $altura = max(2, min(105, $altura));
+        
+        // Diâmetro: 0 cm a 91 cm (para rolos)
+        $diametro = max(0, min(91, $diametro));
+
+        // Verificar soma das dimensões (C+L+A não deve superar 200 cm)
+        $somaTotal = $comprimento + $largura + $altura;
+        if ($somaTotal > 200) {
+            // Reduzir proporcionalmente mantendo as proporções
+            $fator = 200 / $somaTotal;
+            $comprimento = max(16, floor($comprimento * $fator));
+            $largura = max(11, floor($largura * $fator));
+            $altura = max(2, floor($altura * $fator));
+        }
+
+        // Garantir soma mínima de 29 cm
+        $somaFinal = $comprimento + $largura + $altura;
+        if ($somaFinal < 29) {
+            // Ajustar para valores mínimos que atendam a soma
+            $comprimento = 16;
+            $largura = 11;
+            $altura = 2;
+        }
+
+        return [
+            'altura' => $altura,
+            'largura' => $largura,
+            'comprimento' => $comprimento,
+            'diametro' => $diametro
+        ];
     }
 
     /**
