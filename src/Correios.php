@@ -91,6 +91,7 @@ class Correios
         $token = $this->getToken();
         $servicos = $dados['servicos'] ?? ['04014', '04510']; // SEDEX e PAC
         $resultados = [];
+        $pesoGramas = $dados['peso'] * 1000; // Convertendo peso para gramas
 
         foreach ($servicos as $servico) {
             try {
@@ -102,7 +103,7 @@ class Correios
                     'query' => [
                         'cepDestino' => $dados['cepDestino'],
                         'cepOrigem' => $dados['cepOrigem'],
-                        'psObjeto' => $dados['peso'],
+                        'psObjeto' => $pesoGramas,
                         'comprimento' => $dados['comprimento'],
                         'largura' => $dados['largura'],
                         'altura' => $dados['altura'],
