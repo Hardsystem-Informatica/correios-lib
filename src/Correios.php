@@ -122,6 +122,10 @@ class Correios
                 ]);
 
                 $data = json_decode($response->getBody()->getContents(), true);
+                
+                // Consultar prazo de entrega para o mesmo serviço e rota
+                $prazo = $this->consultarPrazo($dados['cepOrigem'], $dados['cepDestino'], $servico);
+                $data['prazo'] = $prazo;
                 $resultados[] = $data;
             } catch (ClientException $e) {
                 $response = $e->getResponse();
