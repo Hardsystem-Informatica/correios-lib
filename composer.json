@@ -17,6 +17,9 @@
         "phpunit/phpunit": "^9.0",
         "phpstan/phpstan": "^1.0"
     },
+    "suggest": {
+        "ext-soap": "Necessária para usar a Logística Reversa (Hardsystem\\Correios\\LogisticaReversa\\LogisticaReversa)"
+    },
     "autoload": {
         "psr-4": {
             "Hardsystem\\Correios\\": "src/"
