@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.5/phpunit.xsd"
+         bootstrap="vendor/autoload.php"
+         colors="true"
+         beStrictAboutTestsThatDoNotTestAnything="false"
+         failOnWarning="true">
+    <testsuites>
+        <testsuite name="unit">
+            <directory>tests/</directory>
+            <exclude>tests/LogisticaReversa/Homologacao</exclude>
+        </testsuite>
+        <testsuite name="homologacao">
+            <directory>tests/LogisticaReversa/Homologacao</directory>
+        </testsuite>
+    </testsuites>
+    <php>
+        <env name="LR_RUN_HOMOLOGACAO" value="0"/>
+        <env name="LR_USUARIO" value="empresacws"/>
+        <env name="LR_SENHA" value="123456"/>
+        <env name="LR_COD_ADMINISTRATIVO" value="17000190"/>
+        <env name="LR_CONTRATO" value="9992157880"/>
+        <env name="LR_CARTAO" value="0011111111"/>
+        <env name="LR_CODIGO_SERVICO" value="04677"/>
+    </php>
+</phpunit>
